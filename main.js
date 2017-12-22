@@ -36,3 +36,31 @@ var keyLeft       = false;
 var keyRight      = false;
 var keyFaster     = false;
 var keySlower     = false;
+
+
+function update(dt) {
+
+  position = Util.increase(position, dt * speed, trackLength);
+  var dx = dt * 2 * (speed/maxSpeed);
+
+  if (keyLeft) {
+    playerX = playerX - dx;
+  }
+  else if (keyRight) {
+    playerX = playerX + dx;
+  }
+
+  if (keyFaster) {
+    speed = Util.accelerate(speed, accel, dt);
+  }
+  else if (keySlower) {
+    speed = Util.accelerate(speed, breaking, dt);
+  }
+
+  if ( ((playerX < -1) || (playerX > 1)) && (speed > offRoadLimit)) {
+    speed = Util.accelerate(speed, offRoadDecel, dt);
+  }
+
+  playerX = Util.limit(playerX, -2, 2); //limit position out of bounds
+  speed = Util.limit(speed, 0, maxSpeed); //limit maxSpeed
+}

@@ -52,7 +52,7 @@ var Util = {
   increase:  function(start, increment, max) { // with looping
     var result = start + increment;
     while (result >= max)
-      result -= max;
+      result -= max; // if go out of bound, slow down
     while (result < 0)
       result += max;
     return result;
@@ -336,7 +336,7 @@ var Render = {
   rumbleWidth:     function(projectedRoadWidth, lanes) { return projectedRoadWidth/Math.max(6,  2*lanes); },
   laneMarkerWidth: function(projectedRoadWidth, lanes) { return projectedRoadWidth/Math.max(32, 8*lanes); }
 
-}
+};
 
 //=============================================================================
 // RACING GAME CONSTANTS
