@@ -12,8 +12,8 @@ body {
 #racer {
   position: absolute;
   z-index: 0;
-  width: 800px;
-  height: 600px;
+  width: 640px;
+  height: 480px;
   margin-left: 20em;
   border: 2px solid black;
 }

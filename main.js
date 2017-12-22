@@ -4,7 +4,7 @@ var step = 1/fps;
 var width         = 1024;                    // logical canvas width
 var height        = 768;                     // logical canvas height
 var segments      = [];                      // array of road segments
-var stats         = Game.stats('fps');       // mr.doobs FPS counter
+// var stats         = Game.stats('fps');       // mr.doobs FPS counter
 var canvas        = Dom.get('canvas');       // our canvas...
 var ctx           = canvas.getContext('2d'); // ...and its drawing context
 var background    = null;                    // our background image (loaded below)
@@ -16,7 +16,7 @@ var rumbleLength  = 3;                       // number of segments per red/white
 var trackLength   = null;                    // z length of entire track (computed)
 var lanes         = 3;                       // number of lanes
 var fieldOfView   = 100;                     // angle (degrees) for field of view
-var cameraHeight  = 1000;                    // z height of camera
+var cameraHeight  = 1000;                    // y height of camera
 var cameraDepth   = null;                    // z distance camera is from screen (computed)
 var drawDistance  = 300;                     // number of segments to draw
 var playerX       = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
@@ -65,7 +65,8 @@ function update(dt) {
 }
 
 
-//build the road
+/////////// build the road
+
 function resetRoad() {
   segments = [];
   for(var n = 0; n < 500; n++) {
@@ -99,7 +100,8 @@ function findSegment(z) {
 }
 
 
-//render the game
+///////////render the game
+
 function render() {
 
   var baseSegment = findSegment(position);
@@ -117,5 +119,93 @@ function render() {
     segment = segments[(baseSegment.index + n) % segments.length];
     segment.looped = segment.index < baseSegment.index;
     segment.fog = Util.exponentioalFog(n/drawDistance, fogDensity);
+  }
+
+  Util.project(
+    segment.p1,
+    (playerX * roadWidth), //x position of camera
+    cameraHeight, //height y position of camera
+    position - (segment.looped ? trackLength : 0), //z position of camera
+    cameraDepth, // z-depth of camera
+    width,
+    height,
+    roadWidth
+  );
+  Util.project(
+    segment.p2,
+    (playerX * roadWidth), //x position of camera
+    cameraHeight, //height y position of camera
+    position - (segment.looped ? trackLength : 0), //z position of camera
+    cameraDepth, // z-depth of camera
+    width,
+    height,
+    roadWidth
+  );
+
+  if ( (segment.p1.camera.z <= cameraDepth) ||  //camera behind
+        (segment.p2.screen.y >= maxy)) continue;
+
+  Render.segment(ctx, width, lanes,
+    segment.p1.screen.x,
+    segment.p1.screen.y,
+    segment.p1.screen.w,
+    segment.p2.screen.x,
+    segment.p2.screen.y,
+    segment.p2.screen.w,
+    segment.fog,
+    segment.color
+  );
+
+  Render.player(ctx, width, height,
+    resolution, roadWidth, sprites, speed/maxSpeed,
+    caemraDepth/playerZ,
+    width/2,
+    height,
+    speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+    0
+  )
+}
+
+/////// Game Loop
+
+Game.run({
+  canvas: canvas, render: render, update: update, step: step,
+  images: ["background", "sprites"],
+  keys: [
+    { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: function() { keyLeft   = true;  } },
+    { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: function() { keyRight  = true;  } },
+    { keys: [KEY.UP,    KEY.W], mode: 'down', action: function() { keyFaster = true;  } },
+    { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: function() { keySlower = true;  } },
+    { keys: [KEY.LEFT,  KEY.A], mode: 'up',   action: function() { keyLeft   = false; } },
+    { keys: [KEY.RIGHT, KEY.D], mode: 'up',   action: function() { keyRight  = false; } },
+    { keys: [KEY.UP,    KEY.W], mode: 'up',   action: function() { keyFaster = false; } },
+    { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: function() { keySlower = false; } }
+  ],
+  ready: function(images) {
+    background = images[0];
+    sprites    = images[1];
+    reset();
+  }
+});
+
+function reset(options) {
+  options       = options || {};
+  canvas.width  = width  = Util.toInt(options.width,          width);
+  canvas.height = height = Util.toInt(options.height,         height);
+  lanes                  = Util.toInt(options.lanes,          lanes);
+  roadWidth              = Util.toInt(options.roadWidth,      roadWidth);
+  cameraHeight           = Util.toInt(options.cameraHeight,   cameraHeight);
+  drawDistance           = Util.toInt(options.drawDistance,   drawDistance);
+  fogDensity             = Util.toInt(options.fogDensity,     fogDensity);
+  fieldOfView            = Util.toInt(options.fieldOfView,    fieldOfView);
+  segmentLength          = Util.toInt(options.segmentLength,  segmentLength);
+  rumbleLength           = Util.toInt(options.rumbleLength,   rumbleLength);
+  cameraDepth            = 1 / Math.tan((fieldOfView/2) * Math.PI/180);
+  playerZ                = (cameraHeight * cameraDepth);
+  resolution             = height/480;
+  refreshTweakUI();
+
+  if ((segments.length==0) || (options.segmentLength) || (options.rumbleLength)) {
+    resetRoad();
   }
 }

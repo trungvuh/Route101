@@ -111,7 +111,7 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
           update = options.update,    // method to update game logic is provided by caller
           render = options.render,    // method to render the game is provided by caller
           step   = options.step,      // fixed frame step (1/fps) is specified by caller
-          stats  = options.stats,     // stats instance is provided by caller
+          // stats  = options.stats,     // stats instance is provided by caller
           now    = null,
           last   = Util.timestamp(),
           dt     = 0,
@@ -126,7 +126,7 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
           update(step);
         }
         render();
-        stats.update();
+        // stats.update();
         last = now;
         requestAnimationFrame(frame, canvas);
       }
