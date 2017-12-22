@@ -1,5 +1,5 @@
 body {
-
+  font-family: Helvetica;
 }
 
 #canvas {
@@ -16,4 +16,12 @@ body {
   height: 600px;
   margin-left: 20em;
   border: 2px solid black;
+}
+
+#instructions {
+  float: left;
+  width: 17em;
+  padding: 1em;
+  border: 1px solid black;
+  box-shadow: 2px 2px 5px black;
 }

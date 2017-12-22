@@ -1,5 +1,4 @@
 
-
 const fps = 60;
 var step = 1/fps;
 var width         = 1024;                    // logical canvas width
@@ -63,4 +62,60 @@ function update(dt) {
 
   playerX = Util.limit(playerX, -2, 2); //limit position out of bounds
   speed = Util.limit(speed, 0, maxSpeed); //limit maxSpeed
+}
+
+
+//build the road
+function resetRoad() {
+  segments = [];
+  for(var n = 0; n < 500; n++) {
+    segments.push({
+      index: n,
+      p1: {
+        world: { z: n * segmentLength },
+        camera: {},
+        screen: {}
+      },
+      p2: {
+        world: { z: (n+1) * segmentLength },
+        camera: {},
+        screen: {}
+      },
+      color: Math.floor(n/rumbleLength) % 2 ? COLORS.DARK : COLORS.LIGHT
+    });
+  }
+
+  segments[findSegment(playerZ).index + 2].color = COLORS.START;
+  segments[findSegment(playerZ).index + 3].color = COLORS.START;
+
+  for (var n = 0; n < rumbleLength; n++) {
+    segments[segments.length - 1 - n].color = COLORS.FINISH;
+  }
+  trackLength = segments.length * segmentLength;
+}
+
+function findSegment(z) {
+  return segments[Math.floor(z/segmentLength) % segments.length];
+}
+
+
+//render the game
+function render() {
+
+  var baseSegment = findSegment(position);
+  var maxy = height;
+
+  ctx.clearRect(0,0, width, height); //clear canvas every frame
+
+  Render.background(ctx, background, width, height, BACKGROUND.SKY);
+  Render.background(ctx, background, width, height, BACKGROUND.HILSS);
+  Render.background(ctx, background, width, height, BACKGROUND.TREES);
+
+  var n, segment;
+
+  for(n=0; n < drawDistance; n++) {
+    segment = segments[(baseSegment.index + n) % segments.length];
+    segment.looped = segment.index < baseSegment.index;
+    segment.fog = Util.exponentioalFog(n/drawDistance, fogDensity);
+  }
 }
