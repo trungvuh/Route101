@@ -1,9 +1,15 @@
-
-
 var fps           = 60;                      // how many 'update' frames per second
 var step          = 1/fps;                   // how long is each frame (in seconds)
 var width         = 1024;                    // logical canvas width
 var height        = 768;                     // logical canvas height
+var centrifugal   = 0.3;                     // centrifugal force multiplier when going around curves
+var offRoadDecel  = 0.99;                    // speed multiplier when off road (e.g. you lose 2% speed each update frame)
+var skySpeed      = 0.001;                   // background sky layer scroll speed when going around curve (or up hill)
+var hillSpeed     = 0.002;                   // background hill layer scroll speed when going around curve (or up hill)
+var treeSpeed     = 0.003;                   // background tree layer scroll speed when going around curve (or up hill)
+var skyOffset     = 0;                       // current sky scroll offset
+var hillOffset    = 0;                       // current hill scroll offset
+var treeOffset    = 0;                       // current tree scroll offset
 var segments      = [];                      // array of road segments
 var stats         = Game.stats('fps');       // mr.doobs FPS counter
 var canvas        = Dom.get('canvas');       // our canvas...
@@ -17,7 +23,7 @@ var rumbleLength  = 3;                       // number of segments per red/white
 var trackLength   = null;                    // z length of entire track (computed)
 var lanes         = 3;                       // number of lanes
 var fieldOfView   = 100;                     // angle (degrees) for field of view
-var cameraHeight  = 1000;                    // z height of camera
+var cameraHeight  = 1250;                    // z height of camera
 var cameraDepth   = null;                    // z distance camera is from screen (computed)
 var drawDistance  = 300;                     // number of segments to draw
 var playerX       = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
@@ -43,14 +49,22 @@ var keySlower     = false;
 
 function update(dt) {
 
+  var playerSegment = findSegment(position+playerZ);
+  var speedPercent  = speed/maxSpeed;
+  var dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to +1) in 1 second
+
   position = Util.increase(position, dt * speed, trackLength);
 
-  var dx = dt * 2 * (speed/maxSpeed); // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
+  skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * speedPercent, 1);
+  hillOffset = Util.increase(hillOffset, hillSpeed * playerSegment.curve * speedPercent, 1);
+  treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * speedPercent, 1);
 
   if (keyLeft)
     playerX = playerX - dx;
   else if (keyRight)
     playerX = playerX + dx;
+
+  playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
 
   if (keyFaster)
     speed = Util.accelerate(speed, accel, dt);
@@ -74,13 +88,17 @@ function update(dt) {
 function render() {
 
   var baseSegment = findSegment(position);
+  var basePercent = Util.percentRemaining(position, segmentLength);
   var maxy        = height;
+
+  var x  = 0;
+  var dx = - (baseSegment.curve * basePercent);
 
   ctx.clearRect(0, 0, width, height);
 
-  Render.background(ctx, background, width, height, BACKGROUND.SKY);
-  Render.background(ctx, background, width, height, BACKGROUND.HILLS);
-  Render.background(ctx, background, width, height, BACKGROUND.TREES);
+  Render.background(ctx, background, width, height, BACKGROUND.SKY,   skyOffset);
+  Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset);
+  Render.background(ctx, background, width, height, BACKGROUND.TREES, treeOffset);
 
   var n, segment;
 
@@ -90,11 +108,14 @@ function render() {
     segment.looped = segment.index < baseSegment.index;
     segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
 
-    Util.project(segment.p1, (playerX * roadWidth), cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
-    Util.project(segment.p2, (playerX * roadWidth), cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+    Util.project(segment.p1, (playerX * roadWidth) - x,      cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+    Util.project(segment.p2, (playerX * roadWidth) - x - dx, cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
 
-    if ((segment.p1.camera.z <= cameraDepth) || // behind us
-        (segment.p2.screen.y >= maxy))          // clip by (already rendered) segment
+    x  = x + dx;
+    dx = dx + segment.curve;
+
+    if ((segment.p1.camera.z <= cameraDepth) ||  // behind us
+        (segment.p2.screen.y >= maxy))           // clip by (already rendered) segment
       continue;
 
     Render.segment(ctx, width, lanes,
@@ -122,16 +143,23 @@ function render() {
 // BUILD ROAD GEOMETRY
 //=========================================================================
 
+
+
 function resetRoad() {
   segments = [];
-  for(var n = 0 ; n < 500 ; n++) {
-    segments.push({
-       index: n,
-       p1: { world: { z:  n   *segmentLength }, camera: {}, screen: {} },
-       p2: { world: { z: (n+1)*segmentLength }, camera: {}, screen: {} },
-       color: Math.floor(n/rumbleLength)%2 ? COLORS.DARK : COLORS.LIGHT
-    });
-  }
+
+  addStraight(ROAD.LENGTH.SHORT/4);
+  addSCurves();
+  addStraight(ROAD.LENGTH.LONG);
+  addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM);
+  addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM);
+  addStraight();
+  addSCurves();
+  addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM);
+  addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM);
+  addStraight();
+  addSCurves();
+  addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.EASY);
 
   segments[findSegment(playerZ).index + 2].color = COLORS.START;
   segments[findSegment(playerZ).index + 3].color = COLORS.START;
@@ -183,7 +211,7 @@ function reset(options) {
   rumbleLength           = Util.toInt(options.rumbleLength,   rumbleLength);
   cameraDepth            = 1 / Math.tan((fieldOfView/2) * Math.PI/180);
   playerZ                = (cameraHeight * cameraDepth);
-  resolution             = height/480;
+  resolution             = height/600;
   refreshTweakUI();
 
   if ((segments.length==0) || (options.segmentLength) || (options.rumbleLength))

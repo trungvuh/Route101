@@ -5,16 +5,17 @@ body {
 #canvas {
   position: absolute;
   z-index: 0;
-  width: 640px;
-  height: 480px;
+  width: 800px;
+  height: 600px;
 }
 
 #racer {
-  position: relative;
+  position: absolute;
+  top: 0;
   z-index: 0;
-  width: 640px;
-  height: 480px;
-  margin-left: 20em;
+  width: 800px;
+  height: 600px;
+  margin-left: 25em;
   border: 2px solid black;
 }
 
@@ -24,6 +25,8 @@ body {
   padding: 1em;
   border: 1px solid black;
   box-shadow: 2px 2px 5px black;
+  margin-top: 2em;
+  margin-left: 2em;
 }
 
 #fps {
@@ -37,20 +40,26 @@ body {
 }
 
 #controls {
-  /* margin-top: 20em; */
+  margin-top: 5em;
+  margin-left: 2em;
 }
 
 #mute {
-  background-position:   0px 0px;
+  /* background-position:   0px 0px; */
   width: 32px;
   height: 32px;
   background: url(images/mute.png);
   display: inline-block;
   cursor: pointer;
   position: absolute;
-  margin-left: 20em;
+  top: 620px;
+  margin-left: 4em;
 }
 
 #mute.on {
   background-position: -32px 0px;
+}
+
+#lanes {
+  display: none;
 }
