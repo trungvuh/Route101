@@ -143,7 +143,50 @@ function render() {
 // BUILD ROAD GEOMETRY
 //=========================================================================
 
+function addSegment(curve) {
+  var n = segments.length;
+  segments.push({
+     index: n,
+        p1: { world: { z:  n   *segmentLength }, camera: {}, screen: {} },
+        p2: { world: { z: (n+1)*segmentLength }, camera: {}, screen: {} },
+     curve: curve,
+     color: Math.floor(n/rumbleLength)%2 ? COLORS.DARK : COLORS.LIGHT
+  });
+}
 
+function addRoad(enter, hold, leave, curve) {
+  var n;
+  for(n = 0 ; n < enter ; n++)
+    addSegment(Util.easeIn(0, curve, n/enter));
+  for(n = 0 ; n < hold  ; n++)
+    addSegment(curve);
+  for(n = 0 ; n < leave ; n++)
+    addSegment(Util.easeInOut(curve, 0, n/leave));
+}
+
+var ROAD = {
+  LENGTH: { NONE: 0, SHORT:  25, MEDIUM:  50, LONG:  100 },
+  CURVE:  { NONE: 0, EASY:    2, MEDIUM:   4, HARD:    6 }
+};
+
+function addStraight(num) {
+  num = num || ROAD.LENGTH.MEDIUM;
+  addRoad(num, num, num, 0);
+}
+
+function addCurve(num, curve) {
+  num    = num    || ROAD.LENGTH.MEDIUM;
+  curve  = curve  || ROAD.CURVE.MEDIUM;
+  addRoad(num, num, num, curve);
+}
+
+function addSCurves() {
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.MEDIUM);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.EASY);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.MEDIUM);
+}
 
 function resetRoad() {
   segments = [];
