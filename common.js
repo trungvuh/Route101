@@ -169,7 +169,9 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
         }
       }
     };
-    Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); } );
+    Dom.on(document, 'keydown', function(ev) {
+      ev.preventDefault();
+       onkey(ev.keyCode, 'down'); } );
     Dom.on(document, 'keyup',   function(ev) { onkey(ev.keyCode, 'up');   } );
   },
 
