@@ -1,15 +1,13 @@
 body {
   font-family: Helvetica;
   z-index: 1;
-  /* background-image:  */
-  /* opacity: 0.5; */
 }
 
 #game-name {
   font-family: 'Racing Sans One', cursive;
   position: absolute;
   top: 0;
-  font-size: 3.6em;
+  font-size: 400%;
   left: 5%;
 }
 
@@ -51,7 +49,6 @@ body {
   border: 1px solid black;
   box-shadow: 2px 2px 5px black;
   margin: 2%;
-
   align-items: center;
 }
 
@@ -63,17 +60,15 @@ body {
   z-index: 5;
   text-align: right;
   vertical-align: middle;
-  /* margin-top: 20em; */
 }
 
 #controls {
   z-index: 1;
-  margin-top: 5%;
+  margin-top: 6%;
   margin-left: 3%;
 }
 
 #mute {
-  /* background-position:   0px 0px; */
   width: 32px;
   height: 32px;
   background: url(images/mute.png);
@@ -90,4 +85,65 @@ body {
 
 #lanes {
   display: none;
+}
+
+#hud {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  padding: 5px 0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 0.8em;
+  background-color: rgba(255,0,0,0.5);
+  color: black;
+  border-bottom: 2px solid black;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+#hud .hud {
+  background-color: rgba(255,255,255,0.6);
+  padding: 5px;
+  border: 1px solid black;
+  margin: 0 5px;
+  transition-property: background-color;
+  transition-duration: 2s;
+  -webkit-transition-property: background-color;
+  -webkit-transition-duration: 2s;
+}
+
+#hud #speed {
+  float: right;
+  margin-right: 1em;
+}
+
+#hud #current_lap_time {
+  float: left;
+  margin-left: 1em;
+}
+
+#hud #last_lap_time {
+  float: left;
+  display: none;
+}
+
+#hud #fast_lap_time {
+  display: block;
+  width: 12em;
+  margin: 0 auto;
+  text-align: center;
+  transition-property: background-color;
+  transition-duration: 2s;
+  -webkit-transition-property: background-color;
+  -webkit-transition-duration: 2s;
+}
+
+#hud .value {
+  color: black;
+  font-weight: bold;
+}
+
+#hud .fastest {
+  background-color: rgba(255,215,0,0.5);
 }
