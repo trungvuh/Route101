@@ -257,7 +257,7 @@ function reset(options) {
   resolution             = height/600;
   refreshTweakUI();
 
-  if ((segments.length==0) || (options.segmentLength) || (options.rumbleLength))
+  if ((segments.length===0) || (options.segmentLength) || (options.rumbleLength))
     resetRoad(); // only rebuild road when necessary
 }
 

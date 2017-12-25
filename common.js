@@ -17,7 +17,7 @@ var Dom = {
     ele = Dom.get(ele);
     var classes = ele.className.split(' ');
     var n = classes.indexOf(name);
-    on = (typeof on == 'undefined') ? (n < 0) : on;
+    on = (typeof on === 'undefined') ? (n < 0) : on;
     if (on && (n < 0))
       classes.push(name);
     else if (!on && (n >= 0))
@@ -27,7 +27,7 @@ var Dom = {
 
   storage: window.localStorage || {}
 
-}
+};
 
 //=========================================================================
 // general purpose helpers (mostly math)
@@ -43,7 +43,7 @@ var Util = {
   randomChoice:     function(options)           { return options[Util.randomInt(0, options.length-1)];            },
   percentRemaining: function(n, total)          { return (n%total)/total;                                         },
   accelerate:       function(v, accel, dt)      { return v + (accel * dt);                                        },
-  interpolate:      function(a,b,percent)       { return a + (b-a)*percent                                        },
+  interpolate:      function(a,b,percent)       { return a + (b-a)*percent;                                        },
   easeIn:           function(a,b,percent)       { return a + (b-a)*Math.pow(percent,2);                           },
   easeOut:          function(a,b,percent)       { return a + (b-a)*(1-Math.pow(1-percent,2));                     },
   easeInOut:        function(a,b,percent)       { return a + (b-a)*((-Math.cos(percent*Math.PI)/2) + 0.5);        },
@@ -77,7 +77,7 @@ var Util = {
     return ! ((max1 < min2) || (min1 > max2));
   }
 
-}
+};
 
 //=========================================================================
 // POLYFILL for requestAnimationFrame
@@ -90,7 +90,7 @@ if (!window.requestAnimationFrame) { // http://paulirish.com/2011/requestanimati
                                  window.msRequestAnimationFrame     ||
                                  function(callback, element) {
                                    window.setTimeout(callback, 1000 / 60);
-                                 }
+                                 };
 }
 
 //=========================================================================
@@ -142,7 +142,7 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
     var count  = names.length;
 
     var onload = function() {
-      if (--count == 0)
+      if (--count === 0)
         callback(result);
     };
 
@@ -162,8 +162,8 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
       for(n = 0 ; n < keys.length ; n++) {
         k = keys[n];
         k.mode = k.mode || 'up';
-        if ((k.key == keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
-          if (k.mode == mode) {
+        if ((k.key === keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
+          if (k.mode === mode) {
             k.action.call();
           }
         }
@@ -218,7 +218,7 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
     });
   }
 
-}
+};
 
 //=========================================================================
 // canvas rendering helpers
@@ -277,7 +277,7 @@ var Render = {
     var imageH = layer.h;
 
     var sourceX = layer.x + Math.floor(layer.w * rotation);
-    var sourceY = layer.y
+    var sourceY = layer.y;
     var sourceW = Math.min(imageW, layer.x+layer.w-sourceX);
     var sourceH = imageH;
 
@@ -328,7 +328,7 @@ var Render = {
 
   fog: function(ctx, x, y, width, height, fog) {
     if (fog < 1) {
-      ctx.globalAlpha = (1-fog)
+      ctx.globalAlpha = (1-fog);
       ctx.fillStyle = COLORS.FOG;
       ctx.fillRect(x, y, width, height);
       ctx.globalAlpha = 1;
@@ -338,7 +338,7 @@ var Render = {
   rumbleWidth:     function(projectedRoadWidth, lanes) { return projectedRoadWidth/Math.max(6,  2*lanes); },
   laneMarkerWidth: function(projectedRoadWidth, lanes) { return projectedRoadWidth/Math.max(32, 8*lanes); }
 
-}
+};
 
 //=============================================================================
 // RACING GAME CONSTANTS
@@ -408,7 +408,7 @@ var SPRITES = {
   PLAYER_RIGHT:           { x:  995, y:  531, w:   80, h:   41 }
 };
 
-SPRITES.SCALE = 0.3 * (1/SPRITES.PLAYER_STRAIGHT.w) // the reference sprite width should be 1/3rd the (half-)roadWidth
+SPRITES.SCALE = 0.3 * (1/SPRITES.PLAYER_STRAIGHT.w); // the reference sprite width should be 1/3rd the (half-)roadWidth
 
 SPRITES.BILLBOARDS = [SPRITES.BILLBOARD01, SPRITES.BILLBOARD02, SPRITES.BILLBOARD03, SPRITES.BILLBOARD04, SPRITES.BILLBOARD05, SPRITES.BILLBOARD06, SPRITES.BILLBOARD07, SPRITES.BILLBOARD08, SPRITES.BILLBOARD09];
 SPRITES.PLANTS     = [SPRITES.TREE1, SPRITES.TREE2, SPRITES.DEAD_TREE1, SPRITES.DEAD_TREE2, SPRITES.PALM_TREE, SPRITES.BUSH1, SPRITES.BUSH2, SPRITES.CACTUS, SPRITES.STUMP, SPRITES.BOULDER1, SPRITES.BOULDER2, SPRITES.BOULDER3];
