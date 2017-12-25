@@ -1,7 +1,7 @@
 var fps           = 60;                      // how many 'update' frames per second
 var step          = 1/fps;                   // how long is each frame (in seconds)
-var width         = 1024;                    // logical canvas width
-var height        = 768;                     // logical canvas height
+var width         = 1280;                    // logical canvas width
+var height        = 960;                     // logical canvas height
 var centrifugal   = 0.3;                     // centrifugal force multiplier when going around curves
 var offRoadDecel  = 0.99;                    // speed multiplier when off road (e.g. you lose 2% speed each update frame)
 var skySpeed      = 0.001;                   // background sky layer scroll speed when going around curve (or up hill)
@@ -188,6 +188,7 @@ function addRoad(enter, hold, leave, curve, y) {
 
 var ROAD = {
   LENGTH: { NONE: 0, SHORT:  25, MEDIUM:  50, LONG:  100 },
+  HILL:   { NONE: 0, LOW:    20, MEDIUM:  40, HIGH:   60 },
   CURVE:  { NONE: 0, EASY:    2, MEDIUM:   4, HARD:    6 }
 };
 
@@ -196,40 +197,64 @@ function addStraight(num) {
   addRoad(num, num, num, 0);
 }
 
-function addCurve(num, curve) {
+function addHill(num, height) {
+  num    = num    || ROAD.LENGTH.MEDIUM;
+  height = height || ROAD.HILL.MEDIUM;
+  addRoad(num, num, num, 0, height);
+}
+
+function addCurve(num, curve, height) {
   num    = num    || ROAD.LENGTH.MEDIUM;
   curve  = curve  || ROAD.CURVE.MEDIUM;
-  addRoad(num, num, num, curve);
+  height = height || ROAD.HILL.NONE;
+  addRoad(num, num, num, curve, height);
+}
+
+function addLowRollingHills(num, height) {
+  num    = num    || ROAD.LENGTH.SHORT;
+  height = height || ROAD.HILL.LOW;
+  addRoad(num, num, num,  0,  height/2);
+  addRoad(num, num, num,  0, -height);
+  addRoad(num, num, num,  0,  height);
+  addRoad(num, num, num,  0,  0);
+  addRoad(num, num, num,  0,  height/2);
+  addRoad(num, num, num,  0,  0);
 }
 
 function addSCurves() {
-  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY);
-  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.MEDIUM);
-  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.EASY);
-  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY);
-  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.MEDIUM);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.NONE);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.MEDIUM,  ROAD.HILL.MEDIUM);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.EASY,   -ROAD.HILL.LOW);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.MEDIUM);
+  addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.MEDIUM, -ROAD.HILL.MEDIUM);
+}
+
+function addDownhillToEnd(num) {
+  num = num || 200;
+  addRoad(num, num, num, -ROAD.CURVE.EASY, -lastY()/segmentLength);
 }
 
 function resetRoad() {
   segments = [];
 
-  addStraight(ROAD.LENGTH.SHORT/4);
-  addSCurves();
-  addStraight(ROAD.LENGTH.LONG);
-  addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM);
-  addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM);
+  addStraight(ROAD.LENGTH.SHORT/2);
+  addHill(ROAD.LENGTH.SHORT, ROAD.HILL.LOW);
+  addLowRollingHills();
+  addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
+  addLowRollingHills();
+  addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
   addStraight();
-  addSCurves();
-  addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM);
-  addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM);
+  addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+  addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
+  addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
+  addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
   addStraight();
-  addSCurves();
-  addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.EASY);
+  addDownhillToEnd();
 
   segments[findSegment(playerZ).index + 2].color = COLORS.START;
   segments[findSegment(playerZ).index + 3].color = COLORS.START;
   for(var n = 0 ; n < rumbleLength ; n++)
-    segments[segments.length-1-n].color = COLORS.FINISH;
+    segments[segments.length-1-n].color       = COLORS.FINISH;
 
   trackLength = segments.length * segmentLength;
 }
