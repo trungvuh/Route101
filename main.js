@@ -89,6 +89,9 @@ function render() {
 
   var baseSegment = findSegment(position);
   var basePercent = Util.percentRemaining(position, segmentLength);
+  var playerSegment = findSegment(position+playerZ);
+  var playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
+  var playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
   var maxy        = height;
 
   var x  = 0;
@@ -96,9 +99,9 @@ function render() {
 
   ctx.clearRect(0, 0, width, height);
 
-  Render.background(ctx, background, width, height, BACKGROUND.SKY,   skyOffset);
-  Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset);
-  Render.background(ctx, background, width, height, BACKGROUND.TREES, treeOffset);
+  Render.background(ctx, background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
+  Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
+  Render.background(ctx, background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
 
   var n, segment;
 
@@ -108,14 +111,27 @@ function render() {
     segment.looped = segment.index < baseSegment.index;
     segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
 
-    Util.project(segment.p1, (playerX * roadWidth) - x,      cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
-    Util.project(segment.p2, (playerX * roadWidth) - x - dx, cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+    Util.project(
+      segment.p1,
+      (playerX * roadWidth) - x,
+      playerY + cameraHeight,
+      position - (segment.looped ? trackLength : 0),
+      cameraDepth, width, height, roadWidth
+    );
+    Util.project(
+      segment.p2,
+      (playerX * roadWidth) - x - dx,
+      playerY + cameraHeight,
+      position - (segment.looped ? trackLength : 0),
+      cameraDepth, width, height, roadWidth
+    );
 
     x  = x + dx;
     dx = dx + segment.curve;
 
-    if ((segment.p1.camera.z <= cameraDepth) ||  // behind us
-        (segment.p2.screen.y >= maxy))           // clip by (already rendered) segment
+    if ((segment.p1.camera.z <= cameraDepth)         || // behind us
+        (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
+        (segment.p2.screen.y >= maxy))                  // clip by (already rendered) segment
       continue;
 
     Render.segment(ctx, width, lanes,
