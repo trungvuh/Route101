@@ -2,7 +2,7 @@
 // minimalist DOM helpers
 //=========================================================================
 
-var Dom = {
+const Dom = {
 
   get:  function(id)                     { return ((id instanceof HTMLElement) || (id === document)) ? id : document.getElementById(id); },
   set:  function(id, html)               { Dom.get(id).innerHTML = html;                        },
@@ -33,7 +33,7 @@ var Dom = {
 // general purpose helpers (mostly math)
 //=========================================================================
 
-var Util = {
+const Util = {
 
   timestamp:        function()                  { return new Date().getTime();                                    },
   toInt:            function(obj, def)          { if (obj !== null) { var x = parseInt(obj, 10); if (!isNaN(x)) return x; } return Util.toInt(def, 0); },
@@ -97,7 +97,7 @@ if (!window.requestAnimationFrame) { // http://paulirish.com/2011/requestanimati
 // GAME LOOP helpers
 //=========================================================================
 
-var Game = {  // a modified version of the game loop from my previous boulderdash game - see http://codeincomplete.com/posts/2011/10/25/javascript_boulderdash/#gameloop
+const Game = {  // a modified version of the game loop from my previous boulderdash game - see http://codeincomplete.com/posts/2011/10/25/javascript_boulderdash/#gameloop
 
   run: function(options) {
 
@@ -224,7 +224,7 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
 // canvas rendering helpers
 //=========================================================================
 
-var Render = {
+const Render = {
 
   polygon: function(ctx, x1, y1, x2, y2, x3, y3, x4, y4, color) {
     ctx.fillStyle = color;
@@ -344,7 +344,7 @@ var Render = {
 // RACING GAME CONSTANTS
 //=============================================================================
 
-var KEY = {
+const KEY = {
   LEFT:  37,
   UP:    38,
   RIGHT: 39,
@@ -355,7 +355,7 @@ var KEY = {
   W:     87
 };
 
-var COLORS = {
+const COLORS = {
   SKY:  '#72D7EE',
   TREE: '#005108',
   FOG:  '#005108',
@@ -365,13 +365,13 @@ var COLORS = {
   FINISH: { road: 'black',   grass: 'black',   rumble: 'black'                     }
 };
 
-var BACKGROUND = {
+const BACKGROUND = {
   HILLS: { x:   5, y:   5, w: 1280, h: 480 },
   SKY:   { x:   5, y: 495, w: 1280, h: 480 },
   TREES: { x:   5, y: 985, w: 1280, h: 480 }
 };
 
-var SPRITES = {
+const SPRITES = {
   PALM_TREE:              { x:    5, y:    5, w:  215, h:  540 },
   BILLBOARD08:            { x:  230, y:    5, w:  385, h:  265 },
   TREE1:                  { x:  625, y:    5, w:  360, h:  360 },

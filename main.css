@@ -71,7 +71,7 @@ body {
 #mute {
   width: 32px;
   height: 32px;
-  background: url(images/mute.png);
+  background: url(images/util/mute.png);
   display: inline-block;
   cursor: pointer;
   position: absolute;
