@@ -12,7 +12,6 @@ var skyOffset     = 0;                       // current sky scroll offset
 var hillOffset    = 0;                       // current hill scroll offset
 var treeOffset    = 0;                       // current tree scroll offset
 var segments      = [];                      // array of road segments
-var stats         = Game.stats('fps');       // mr.doobs FPS counter
 var canvas        = Dom.get('canvas');       // our canvas...
 var ctx           = canvas.getContext('2d'); // ...and its drawing context
 var background    = null;                    // our background image (loaded below)
@@ -58,7 +57,7 @@ var hud = {
 //=========================================================================
 
 Game.run({
-  canvas: canvas, render: render, update: update, stats: stats, step: step,
+  canvas: canvas, render: render, update: update, step: step,
   images: ["background", "sprites"],
   keys: [
     { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: function() { keyLeft   = true;  } },
