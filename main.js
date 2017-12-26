@@ -22,7 +22,7 @@ var segmentLength = 200;                     // length of a single segment
 var rumbleLength  = 3;                       // number of segments per red/white rumble strip
 var trackLength   = null;                    // z length of entire track (computed)
 var lanes         = 3;                       // number of lanes
-var fieldOfView   = 100;                     // angle (degrees) for field of view
+var fieldOfView   = 110;                     // angle (degrees) for field of view
 var cameraHeight  = 1250;                    // z height of camera
 var cameraDepth   = null;                    // z distance camera is from screen (computed)
 var drawDistance  = 300;                     // number of segments to draw
@@ -59,11 +59,11 @@ var hud = {
 
 function update(dt) {
 
-  var playerSegment = findSegment(position+playerZ);
-  var speedPercent  = speed/maxSpeed;
-  var dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to +1) in 1 second
   var n, car, carW, sprite, spriteW;
+  var playerSegment = findSegment(position+playerZ);
   var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
+  var speedPercent  = speed/maxSpeed;
+  var dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
   var startPosition = position;
 
   updateCars(dt, playerSegment, playerW);
@@ -84,11 +84,11 @@ function update(dt) {
   else
     speed = Util.accelerate(speed, decel, dt);
 
+
   if ((playerX < -1) || (playerX > 1)) {
 
-    if (speed > offRoadLimit) {
+    if (speed > offRoadLimit)
       speed = Util.accelerate(speed, offRoadDecel, dt);
-    }
 
     for(n = 0 ; n < playerSegment.sprites.length ; n++) {
       sprite  = playerSegment.sprites[n];
@@ -113,7 +113,7 @@ function update(dt) {
     }
   }
 
-  playerX = Util.limit(playerX, -3, 3);     // dont ever let player go too far out of bounds
+  playerX = Util.limit(playerX, -3, 3);     // dont ever let it go too far out of bounds
   speed   = Util.limit(speed, 0, maxSpeed); // or exceed maxSpeed
 
   skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * (position-startPosition)/segmentLength, 1);
@@ -144,10 +144,9 @@ function update(dt) {
 
   updateHud('speed',            5 * Math.round(speed/500));
   updateHud('current_lap_time', formatTime(currentLapTime));
-
-  ///////
-
 }
+
+//-------------------------------------------------------------------------
 
 function updateCars(dt, playerSegment, playerW) {
   var n, car, oldSegment, newSegment;
@@ -158,7 +157,7 @@ function updateCars(dt, playerSegment, playerW) {
     car.z       = Util.increase(car.z, dt * car.speed, trackLength);
     car.percent = Util.percentRemaining(car.z, segmentLength); // useful for interpolation during rendering phase
     newSegment  = findSegment(car.z);
-    if (oldSegment !== newSegment) {
+    if (oldSegment != newSegment) {
       index = oldSegment.cars.indexOf(car);
       oldSegment.cars.splice(index, 1);
       newSegment.cars.push(car);
@@ -168,8 +167,7 @@ function updateCars(dt, playerSegment, playerW) {
 
 function updateCarOffset(car, carSegment, playerSegment, playerW) {
 
-  var i, j, dir, segment, otherCar, otherCarW, lookahead = 20;
-  var carW = car.sprite.w * SPRITES.SCALE;
+  var i, j, dir, segment, otherCar, otherCarW, lookahead = 20, carW = car.sprite.w * SPRITES.SCALE;
 
   // optimization, dont bother steering around other cars when 'out of sight' of the player
   if ((carSegment.index - playerSegment.index) > drawDistance)
@@ -178,30 +176,27 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
   for(i = 1 ; i < lookahead ; i++) {
     segment = segments[(carSegment.index+i)%segments.length];
 
-    if ((segment === playerSegment) &&
-        (car.speed > speed) &&
-        (Util.overlap(playerX, playerW, car.offset, carW, 1.2))) {
+    if ((segment === playerSegment) && (car.speed > speed) && (Util.overlap(playerX, playerW, car.offset, carW, 1.2))) {
       if (playerX > 0.5)
         dir = -1;
       else if (playerX < -0.5)
         dir = 1;
       else
         dir = (car.offset > playerX) ? 1 : -1;
-      return (dir * 1/i * (car.speed-speed)/maxSpeed); // the closer the cars (smaller i) and the greated the speed ratio, the larger the offset
+      return dir * 1/i * (car.speed-speed)/maxSpeed; // the closer the cars (smaller i) and the greated the speed ratio, the larger the offset
     }
 
     for(j = 0 ; j < segment.cars.length ; j++) {
       otherCar  = segment.cars[j];
       otherCarW = otherCar.sprite.w * SPRITES.SCALE;
-      if ((car.speed > otherCar.speed) &&
-          Util.overlap(car.offset, carW, otherCar.offset, otherCarW, 1.2)) {
+      if ((car.speed > otherCar.speed) && Util.overlap(car.offset, carW, otherCar.offset, otherCarW, 1.2)) {
         if (otherCar.offset > 0.5)
           dir = -1;
         else if (otherCar.offset < -0.5)
           dir = 1;
         else
           dir = (car.offset > otherCar.offset) ? 1 : -1;
-        return (dir * 1/i * (car.speed-otherCar.speed)/maxSpeed);
+        return dir * 1/i * (car.speed-otherCar.speed)/maxSpeed;
       }
     }
   }
@@ -240,12 +235,12 @@ function formatTime(dt) {
 
 function render() {
 
-  var baseSegment = findSegment(position);
-  var basePercent = Util.percentRemaining(position, segmentLength);
+  var baseSegment   = findSegment(position);
+  var basePercent   = Util.percentRemaining(position, segmentLength);
   var playerSegment = findSegment(position+playerZ);
   var playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
   var playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
-  var maxy        = height;
+  var maxy          = height;
 
   var x  = 0;
   var dx = - (baseSegment.curve * basePercent);
@@ -256,35 +251,24 @@ function render() {
   Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
   Render.background(ctx, background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
 
-  var n, segment;
+  var n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
 
   for(n = 0 ; n < drawDistance ; n++) {
 
     segment        = segments[(baseSegment.index + n) % segments.length];
     segment.looped = segment.index < baseSegment.index;
     segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
+    segment.clip   = maxy;
 
-    Util.project(
-      segment.p1,
-      (playerX * roadWidth) - x,
-      playerY + cameraHeight,
-      position - (segment.looped ? trackLength : 0),
-      cameraDepth, width, height, roadWidth
-    );
-    Util.project(
-      segment.p2,
-      (playerX * roadWidth) - x - dx,
-      playerY + cameraHeight,
-      position - (segment.looped ? trackLength : 0),
-      cameraDepth, width, height, roadWidth
-    );
+    Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+    Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
 
     x  = x + dx;
     dx = dx + segment.curve;
 
     if ((segment.p1.camera.z <= cameraDepth)         || // behind us
         (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
-        (segment.p2.screen.y >= maxy))                  // clip by (already rendered) segment
+        (segment.p2.screen.y >= maxy))                  // clip by (already rendered) hill
       continue;
 
     Render.segment(ctx, width, lanes,
@@ -297,34 +281,65 @@ function render() {
                    segment.fog,
                    segment.color);
 
-    maxy = segment.p2.screen.y;
+    maxy = segment.p1.screen.y;
   }
 
-  Render.player(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
-                cameraDepth/playerZ,
-                width/2,
-                height,
-                speed * (keyLeft ? -1 : keyRight ? 1 : 0),
-                0);
+  for(n = (drawDistance-1) ; n > 0 ; n--) {
+    segment = segments[(baseSegment.index + n) % segments.length];
+
+    for(i = 0 ; i < segment.cars.length ; i++) {
+      car         = segment.cars[i];
+      sprite      = car.sprite;
+      spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
+      spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
+      spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
+      Render.sprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+    }
+
+    for(i = 0 ; i < segment.sprites.length ; i++) {
+      sprite      = segment.sprites[i];
+      spriteScale = segment.p1.screen.scale;
+      spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
+      spriteY     = segment.p1.screen.y;
+      Render.sprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
+    }
+
+    if (segment == playerSegment) {
+      Render.player(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
+                    cameraDepth/playerZ,
+                    width/2,
+                    (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
+                    speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+                    playerSegment.p2.world.y - playerSegment.p1.world.y);
+    }
+  }
+}
+
+function findSegment(z) {
+  return segments[Math.floor(z/segmentLength) % segments.length];
 }
 
 //=========================================================================
 // BUILD ROAD GEOMETRY
 //=========================================================================
 
-function lastY() {
-  return (segments.length === 0) ? 0 : segments[segments.length-1].p2.world.y;
-}
+function lastY() { return (segments.length == 0) ? 0 : segments[segments.length-1].p2.world.y; }
 
 function addSegment(curve, y) {
   var n = segments.length;
   segments.push({
-     index: n,
-        p1: { world: { y: lastY(), z:  n   *segmentLength }, camera: {}, screen: {} },
-        p2: { world: { y: y, z: (n+1)*segmentLength }, camera: {}, screen: {} },
-     curve: curve,
-     color: Math.floor(n/rumbleLength)%2 ? COLORS.DARK : COLORS.LIGHT
+      index: n,
+         p1: { world: { y: lastY(), z:  n   *segmentLength }, camera: {}, screen: {} },
+         p2: { world: { y: y,       z: (n+1)*segmentLength }, camera: {}, screen: {} },
+      curve: curve,
+    sprites: [],
+       cars: [],
+      color: Math.floor(n/rumbleLength)%2 ? COLORS.DARK : COLORS.LIGHT
   });
+}
+
+function addSprite(n, sprite, offset) {
+  segments[n].sprites.push({ source: sprite, offset: offset });
 }
 
 function addRoad(enter, hold, leave, curve, y) {
@@ -340,14 +355,14 @@ function addRoad(enter, hold, leave, curve, y) {
 }
 
 var ROAD = {
-  LENGTH: { NONE: 0, SHORT:  25, MEDIUM:  50, LONG:  100 },
-  HILL:   { NONE: 0, LOW:    20, MEDIUM:  40, HIGH:   60 },
-  CURVE:  { NONE: 0, EASY:    2, MEDIUM:   4, HARD:    6 }
+  LENGTH: { NONE: 0, SHORT:  25, MEDIUM:   50, LONG:  100 },
+  HILL:   { NONE: 0, LOW:    20, MEDIUM:   40, HIGH:   60 },
+  CURVE:  { NONE: 0, EASY:    2, MEDIUM:    4, HARD:    6 }
 };
 
 function addStraight(num) {
   num = num || ROAD.LENGTH.MEDIUM;
-  addRoad(num, num, num, 0);
+  addRoad(num, num, num, 0, 0);
 }
 
 function addHill(num, height) {
@@ -366,12 +381,12 @@ function addCurve(num, curve, height) {
 function addLowRollingHills(num, height) {
   num    = num    || ROAD.LENGTH.SHORT;
   height = height || ROAD.HILL.LOW;
-  addRoad(num, num, num,  0,  height/2);
-  addRoad(num, num, num,  0, -height);
-  addRoad(num, num, num,  0,  height);
-  addRoad(num, num, num,  0,  0);
-  addRoad(num, num, num,  0,  height/2);
-  addRoad(num, num, num,  0,  0);
+  addRoad(num, num, num,  0,                height/2);
+  addRoad(num, num, num,  0,               -height);
+  addRoad(num, num, num,  ROAD.CURVE.EASY,  height);
+  addRoad(num, num, num,  0,                0);
+  addRoad(num, num, num, -ROAD.CURVE.EASY,  height/2);
+  addRoad(num, num, num,  0,                0);
 }
 
 function addSCurves() {
@@ -382,6 +397,17 @@ function addSCurves() {
   addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.MEDIUM, -ROAD.HILL.MEDIUM);
 }
 
+function addBumps() {
+  addRoad(10, 10, 10, 0,  5);
+  addRoad(10, 10, 10, 0, -2);
+  addRoad(10, 10, 10, 0, -5);
+  addRoad(10, 10, 10, 0,  8);
+  addRoad(10, 10, 10, 0,  5);
+  addRoad(10, 10, 10, 0, -7);
+  addRoad(10, 10, 10, 0,  5);
+  addRoad(10, 10, 10, 0, -2);
+}
+
 function addDownhillToEnd(num) {
   num = num || 200;
   addRoad(num, num, num, -ROAD.CURVE.EASY, -lastY()/segmentLength);
@@ -390,30 +416,96 @@ function addDownhillToEnd(num) {
 function resetRoad() {
   segments = [];
 
-  addStraight(ROAD.LENGTH.SHORT/2);
-  addHill(ROAD.LENGTH.SHORT, ROAD.HILL.LOW);
+  addStraight(ROAD.LENGTH.SHORT);
   addLowRollingHills();
+  addSCurves();
   addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
+  addBumps();
   addLowRollingHills();
-  addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+  addCurve(ROAD.LENGTH.LONG*2, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
   addStraight();
-  addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+  addHill(ROAD.LENGTH.MEDIUM, ROAD.HILL.HIGH);
+  addSCurves();
+  addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.NONE);
   addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
   addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
+  addBumps();
   addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
   addStraight();
+  addSCurves();
   addDownhillToEnd();
+
+  resetSprites();
+  resetCars();
 
   segments[findSegment(playerZ).index + 2].color = COLORS.START;
   segments[findSegment(playerZ).index + 3].color = COLORS.START;
   for(var n = 0 ; n < rumbleLength ; n++)
-    segments[segments.length-1-n].color       = COLORS.FINISH;
+    segments[segments.length-1-n].color = COLORS.FINISH;
 
   trackLength = segments.length * segmentLength;
 }
 
-function findSegment(z) {
-  return segments[Math.floor(z/segmentLength) % segments.length];
+function resetSprites() {
+  var n, i;
+
+  addSprite(20,  SPRITES.BILLBOARD07, -1);
+  addSprite(40,  SPRITES.BILLBOARD06, -1);
+  addSprite(60,  SPRITES.BILLBOARD08, -1);
+  addSprite(80,  SPRITES.BILLBOARD09, -1);
+  addSprite(100, SPRITES.BILLBOARD01, -1);
+  addSprite(120, SPRITES.BILLBOARD02, -1);
+  addSprite(140, SPRITES.BILLBOARD03, -1);
+  addSprite(160, SPRITES.BILLBOARD04, -1);
+  addSprite(180, SPRITES.BILLBOARD05, -1);
+
+  addSprite(240,                  SPRITES.BILLBOARD07, -1.2);
+  addSprite(240,                  SPRITES.BILLBOARD06,  1.2);
+  addSprite(segments.length - 25, SPRITES.BILLBOARD07, -1.2);
+  addSprite(segments.length - 25, SPRITES.BILLBOARD06,  1.2);
+
+  for(n = 10 ; n < 200 ; n += 4 + Math.floor(n/100)) {
+    addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
+    addSprite(n, SPRITES.PALM_TREE,   1 + Math.random()*2);
+  }
+
+  for(n = 250 ; n < 1000 ; n += 5) {
+    addSprite(n,     SPRITES.COLUMN, 1.1);
+    addSprite(n + Util.randomInt(0,5), SPRITES.TREE1, -1 - (Math.random() * 2));
+    addSprite(n + Util.randomInt(0,5), SPRITES.TREE2, -1 - (Math.random() * 2));
+  }
+
+  for(n = 200 ; n < segments.length ; n += 3) {
+    addSprite(n, Util.randomChoice(SPRITES.PLANTS), Util.randomChoice([1,-1]) * (2 + Math.random() * 5));
+  }
+
+  var side, sprite, offset;
+  for(n = 1000 ; n < (segments.length-50) ; n += 100) {
+    side      = Util.randomChoice([1, -1]);
+    addSprite(n + Util.randomInt(0, 50), Util.randomChoice(SPRITES.BILLBOARDS), -side);
+    for(i = 0 ; i < 20 ; i++) {
+      sprite = Util.randomChoice(SPRITES.PLANTS);
+      offset = side * (1.5 + Math.random());
+      addSprite(n + Util.randomInt(0, 50), sprite, offset);
+    }
+
+  }
+
+}
+
+function resetCars() {
+  cars = [];
+  var n, car, segment, offset, z, sprite, speed;
+  for (var n = 0 ; n < totalCars ; n++) {
+    offset = Math.random() * Util.randomChoice([-0.8, 0.8]);
+    z      = Math.floor(Math.random() * segments.length) * segmentLength;
+    sprite = Util.randomChoice(SPRITES.CARS);
+    speed  = maxSpeed/4 + Math.random() * maxSpeed/(sprite == SPRITES.SEMI ? 4 : 2);
+    car = { offset: offset, z: z, sprite: sprite, speed: speed };
+    segment = findSegment(car.z);
+    segment.cars.push(car);
+    cars.push(car);
+  }
 }
 
 //=========================================================================
@@ -437,6 +529,8 @@ Game.run({
     background = images[0];
     sprites    = images[1];
     reset();
+    Dom.storage.fast_lap_time = Dom.storage.fast_lap_time || 180;
+    updateHud('fast_lap_time', formatTime(Util.toFloat(Dom.storage.fast_lap_time)));
   }
 });
 
@@ -454,10 +548,10 @@ function reset(options) {
   rumbleLength           = Util.toInt(options.rumbleLength,   rumbleLength);
   cameraDepth            = 1 / Math.tan((fieldOfView/2) * Math.PI/180);
   playerZ                = (cameraHeight * cameraDepth);
-  resolution             = height/600;
+  resolution             = height/480;
   refreshTweakUI();
 
-  if ((segments.length===0) || (options.segmentLength) || (options.rumbleLength))
+  if ((segments.length==0) || (options.segmentLength) || (options.rumbleLength))
     resetRoad(); // only rebuild road when necessary
 }
 
