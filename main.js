@@ -37,11 +37,21 @@ var breaking      = -maxSpeed/2;               // deceleration rate when braking
 var decel         = -maxSpeed/5;             // 'natural' deceleration rate when neither accelerating, nor braking
 var offRoadDecel  = -maxSpeed/2;             // off road deceleration is somewhere in between
 var offRoadLimit  =  maxSpeed/4;             // limit when off road deceleration no longer applies (e.g. you can always go at least this speed even when off road)
+var totalCars      = 200;                     // total number of cars on the road
+var currentLapTime = 0;                       // current lap time
+var lastLapTime    = null;                    // last lap time
 
 var keyLeft       = false;
 var keyRight      = false;
 var keyFaster     = false;
 var keySlower     = false;
+
+var hud = {
+  speed:            { value: null, dom: Dom.get('speed_value')            },
+  current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
+  last_lap_time:    { value: null, dom: Dom.get('last_lap_time_value')    },
+  fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    }
+}
 
 //=========================================================================
 // UPDATE THE GAME WORLD
@@ -52,12 +62,13 @@ function update(dt) {
   var playerSegment = findSegment(position+playerZ);
   var speedPercent  = speed/maxSpeed;
   var dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to +1) in 1 second
+  var n, car, carW, sprite, spriteW;
+  var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
+  var startPosition = position;
+
+  updateCars(dt, playerSegment, playerW);
 
   position = Util.increase(position, dt * speed, trackLength);
-
-  skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * speedPercent, 1);
-  hillOffset = Util.increase(hillOffset, hillSpeed * playerSegment.curve * speedPercent, 1);
-  treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * speedPercent, 1);
 
   if (keyLeft)
     playerX = playerX - dx;
@@ -73,11 +84,40 @@ function update(dt) {
   else
     speed = Util.accelerate(speed, decel, dt);
 
-  if (((playerX < -1) || (playerX > 1)) && (speed > offRoadLimit))
-    speed = Util.accelerate(speed, offRoadDecel, dt);
+  if ((playerX < -1) || (playerX > 1)) {
+
+    if (speed > offRoadLimit)
+      speed = Util.accelerate(speed, offRoadDecel, dt);
+
+    for(n = 0 ; n < playerSegment.sprites.length ; n++) {
+      sprite  = playerSegment.sprites[n];
+      spriteW = sprite.source.w * SPRITES.SCALE;
+      if (Util.overlap(playerX, playerW, sprite.offset + spriteW/2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
+        speed = maxSpeed/5;
+        position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
+        break;
+      }
+    }
+  }
+
+  for(n = 0 ; n < playerSegment.cars.length ; n++) {
+    car  = playerSegment.cars[n];
+    carW = car.sprite.w * SPRITES.SCALE;
+    if (speed > car.speed) {
+      if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
+        speed    = car.speed * (car.speed/speed);
+        position = Util.increase(car.z, -playerZ, trackLength);
+        break;
+      }
+    }
+  }
 
   playerX = Util.limit(playerX, -2, 2);     // dont ever let player go too far out of bounds
   speed   = Util.limit(speed, 0, maxSpeed); // or exceed maxSpeed
+
+  skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * (position-startPosition)/segmentLength, 1);
+  hillOffset = Util.increase(hillOffset, hillSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
+  treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
 
 }
 
