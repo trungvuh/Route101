@@ -10,7 +10,7 @@ This project is still very far from being a final/ finished product. There are t
 
 **Note:** although it may appear to be a 3D project, there is no 3D (such as Three.js or WebGL) technology used in this project. This is a pseudo-3D project, built solely on HTML5 using JavaScript and CSS to achieve a more realistic feeling of those old time arcade games.
 
-![]()
+![](https://github.com/trungvuh/Route66/raw/master/images/intro.gif)
 
 ## Features
 
@@ -18,11 +18,11 @@ This project is still very far from being a final/ finished product. There are t
 
 In order to create a realistic 3D feeling, I used the translating - projecting - scaling technique that was introduce by **Louis Gorenfeld** and **Jakes Gordon** (reference below). The world coordinates will be translated to camera coordinates, which then be projected onto a normalized projection screen, and finally be scaled down to our physical (canvas) screen coordinates. Details explained in the diagram below:
 
-![]()
+![](https://github.com/trungvuh/Route66/raw/master/images/equations.png)
 
 Building a road is a fun part, especially when it comes to build a curve. Since each segment of the road is basically a polygon by itself, we can "shift" the next road segment by a small dx amount, and "curve" the road to where we want it to be.
 
-![]()
+![](https://github.com/trungvuh/Route66/raw/master/images/curves.png)
 
 #### Collision
 
@@ -101,4 +101,4 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
 
   + **Jakes Gordon** for his very details step-by-step tutorial on how to build a racing game. His tutorial was what helped me the most in understanding about how all the little components of the game interact with each other. Details can be found [here](https://codeincomplete.com/posts/javascript-racer-v1-straight/)
 
-  + **Pixel Warehouse** and **Sega Senesis** for all the graphic contents in this game. It can be found [here](http://pixel.garoux.net/?scr=sprites&game_id=44&p=1) 
+  + **Pixel Warehouse** and **Sega Senesis** for all the graphic contents in this game. It can be found [here](http://pixel.garoux.net/?scr=sprites&game_id=44&p=1)
