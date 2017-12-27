@@ -119,7 +119,7 @@ const Util = {
     return 1 / (Math.pow(Math.E, (distance * distance * density)));
   },
 
-  increase(start, increment, max) { 
+  increase(start, increment, max) {
     var result = start + increment;
     while (result >= max) {
       result -= max;
@@ -242,14 +242,15 @@ const Game = {
     };
     Dom.on(document, 'keydown', (ev) => {
       ev.preventDefault();
-       onkey(ev.keyCode, 'down'); } );
+      onkey(ev.keyCode, 'down');
+    });
     Dom.on(document, 'keyup', (ev) => { onkey(ev.keyCode, 'up');   } );
   },
 
   playMusic() {
     var music = Dom.get('music');
     music.loop = true;
-    music.volume = 0.1;
+    music.volume = 0.08;
     music.muted = (Dom.storage.muted === "true");
     music.play();
     Dom.toggleClassName('mute', 'on', music.muted);
