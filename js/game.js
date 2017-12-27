@@ -122,9 +122,10 @@ function updateCars(dt, playerSegment, playerW) {
 
 function updateCarOffset(car, carSegment, playerSegment, playerW) {
 
-  var i, j, dir, segment, otherCar, otherCarW, lookahead = 20, carW = car.sprite.w * SPRITES.SCALE;
+  var i, j, dir, segment, otherCar, otherCarW, lookahead = 20;
+  var carW = car.sprite.w * SPRITES.SCALE;
 
-  // optimization, dont bother steering around other cars when 'out of sight' of the player
+  // dont bother steering around other cars when they are 'out of sight' of the player
   if ((carSegment.index - playerSegment.index) > drawDistance)
     return 0;
 
