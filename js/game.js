@@ -8,7 +8,8 @@ function update(dt) {
   var playerSegment = findSegment(position+playerZ);
   var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
   var speedPercent  = speed/maxSpeed;
-  var dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
+  var dx            = dt * 2 * speedPercent;
+  // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
   var startPosition = position;
 
   updateCars(dt, playerSegment, playerW);
@@ -32,9 +33,12 @@ function update(dt) {
 
   if ((playerX < -1) || (playerX > 1)) {
 
-    if (speed > offRoadLimit)
+    //speed when going offroad
+    if (speed > offRoadLimit) {
       speed = Util.accelerate(speed, offRoadDecel, dt);
+    }
 
+    //detect collision
     for(n = 0 ; n < playerSegment.sprites.length ; n++) {
       sprite  = playerSegment.sprites[n];
       spriteW = sprite.source.w * SPRITES.SCALE;
@@ -102,7 +106,7 @@ function updateCars(dt, playerSegment, playerW) {
     car.z       = Util.increase(car.z, dt * car.speed, trackLength);
     car.percent = Util.percentRemaining(car.z, segmentLength); // useful for interpolation during rendering phase
     newSegment  = findSegment(car.z);
-    if (oldSegment != newSegment) {
+    if (oldSegment !== newSegment) {
       index = oldSegment.cars.indexOf(car);
       oldSegment.cars.splice(index, 1);
       newSegment.cars.push(car);
@@ -122,42 +126,53 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
     segment = segments[(carSegment.index+i)%segments.length];
 
     if ((segment === playerSegment) && (car.speed > speed) && (Util.overlap(playerX, playerW, car.offset, carW, 1.2))) {
-      if (playerX > 0.5)
+      if (playerX > 0.5) {
         dir = -1;
-      else if (playerX < -0.5)
+      }
+      else if (playerX < -0.5) {
         dir = 1;
-      else
+      }
+      else {
         dir = (car.offset > playerX) ? 1 : -1;
-      return dir * 1/i * (car.speed-speed)/maxSpeed; // the closer the cars (smaller i) and the greated the speed ratio, the larger the offset
+        return dir * 1/i * (car.speed-speed)/maxSpeed; // the closer the cars (smaller i) and the greated the speed ratio, the larger the offset
+      }
     }
 
     for(j = 0 ; j < segment.cars.length ; j++) {
       otherCar  = segment.cars[j];
       otherCarW = otherCar.sprite.w * SPRITES.SCALE;
+
       if ((car.speed > otherCar.speed) && Util.overlap(car.offset, carW, otherCar.offset, otherCarW, 1.2)) {
-        if (otherCar.offset > 0.5)
+        if (otherCar.offset > 0.5) {
           dir = -1;
-        else if (otherCar.offset < -0.5)
+        }
+        else if (otherCar.offset < -0.5) {
           dir = 1;
-        else
+        }
+        else {
           dir = (car.offset > otherCar.offset) ? 1 : -1;
-        return dir * 1/i * (car.speed-otherCar.speed)/maxSpeed;
+          return dir * 1/i * (car.speed-otherCar.speed)/maxSpeed;
+        }
       }
     }
   }
 
   // if no cars ahead, but I have somehow ended up off road, then steer back on
-  if (car.offset < -0.9)
+  if (car.offset < -0.9) {
     return 0.1;
-  else if (car.offset > 0.9)
+  }
+  else if (car.offset > 0.9) {
     return -0.1;
-  else
+  }
+  else {
     return 0;
+  }
 }
 
 //-------------------------------------------------------------------------
 
 function updateHud(key, value) { // accessing DOM can be slow, so only do it if value has changed
+
   if (hud[key].value !== value) {
     hud[key].value = value;
     Dom.set(hud[key].dom, value);
@@ -173,3 +188,10 @@ function formatTime(dt) {
   else
     return seconds + "." + tenths;
 }
+
+var hud = {
+  speed:            { value: null, dom: Dom.get('speed_value')            },
+  current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
+  last_lap_time:    { value: null, dom: Dom.get('last_lap_time_value')    },
+  fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    }
+};

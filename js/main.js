@@ -1,4 +1,3 @@
-
 var fps           = 60;                      // how many 'update' frames per second
 var step          = 1/fps;                   // how long is each frame (in seconds)
 var width         = 1280;                    // logical canvas width
@@ -46,15 +45,9 @@ var keyRight      = false;
 var keyFaster     = false;
 var keySlower     = false;
 
-var hud = {
-  speed:            { value: null, dom: Dom.get('speed_value')            },
-  current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
-  last_lap_time:    { value: null, dom: Dom.get('last_lap_time_value')    },
-  fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    }
-};
-//=========================================================================
+//====================================================================
 // THE GAME LOOP
-//=========================================================================
+//====================================================================
 
 Game.run({
   canvas: canvas, render: render, update: update, step: step,
@@ -69,7 +62,8 @@ Game.run({
     { keys: [KEY.UP,    KEY.W], mode: 'up',   action: function() { keyFaster = false; } },
     { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: function() { keySlower = false; } }
   ],
-  ready: function(images) {
+
+  ready(images) {
     background = images[0];
     sprites    = images[1];
     reset();
@@ -95,32 +89,54 @@ function reset(options) {
   resolution             = height/480;
   refreshTweakUI();
 
-  if ((segments.length==0) || (options.segmentLength) || (options.rumbleLength))
+  if ((segments.length === 0) || (options.segmentLength) || (options.rumbleLength)) {
     resetRoad(); // only rebuild road when necessary
+  }
 }
 
 //=========================================================================
 // TWEAK UI HANDLERS
 //=========================================================================
 
-// Dom.on('resolution', 'change', function(ev) {
-//   var w, h, ratio;
-//   switch(ev.target.options[ev.target.selectedIndex].value) {
-//     case 'fine':   w = 1280; h = 960;  ratio=w/width; break;
-//     case 'high':   w = 1024; h = 768;  ratio=w/width; break;
-//     case 'medium': w = 640;  h = 480;  ratio=w/width; break;
-//     case 'low':    w = 480;  h = 360;  ratio=w/width; break;
-//   }
-//   reset({ width: w, height: h })
-//   Dom.blur(ev);
-// });
+Dom.on('lanes', 'change', (ev) => {
+  Dom.blur(ev);
+  reset({ lanes: ev.target.options[ev.target.selectedIndex].value });
+});
 
-Dom.on('lanes',          'change', function(ev) { Dom.blur(ev); reset({ lanes:         ev.target.options[ev.target.selectedIndex].value }); });
-Dom.on('roadWidth',      'change', function(ev) { Dom.blur(ev); reset({ roadWidth:     Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) }); });
-Dom.on('cameraHeight',   'change', function(ev) { Dom.blur(ev); reset({ cameraHeight:  Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) }); });
-Dom.on('drawDistance',   'change', function(ev) { Dom.blur(ev); reset({ drawDistance:  Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) }); });
-Dom.on('fieldOfView',    'change', function(ev) { Dom.blur(ev); reset({ fieldOfView:   Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) }); });
-Dom.on('fogDensity',     'change', function(ev) { Dom.blur(ev); reset({ fogDensity:    Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) }); });
+Dom.on('roadWidth', 'change', (ev) => {
+  Dom.blur(ev);
+  reset({
+    roadWidth: Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max')))
+  });
+});
+
+Dom.on('cameraHeight', 'change', (ev) => {
+  Dom.blur(ev);
+  reset({
+    cameraHeight: Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max')))
+  });
+});
+
+Dom.on('drawDistance', 'change', (ev) => {
+  Dom.blur(ev);
+  reset({
+    drawDistance: Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) 
+  });
+});
+
+Dom.on('fieldOfView', 'change', (ev) => {
+  Dom.blur(ev);
+  reset({
+    fieldOfView: Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max')))
+  });
+});
+
+Dom.on('fogDensity', 'change', (ev) => {
+  Dom.blur(ev);
+  reset({
+    fogDensity: Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max')))
+  });
+});
 
 function refreshTweakUI() {
   Dom.get('lanes').selectedIndex = lanes-1;
