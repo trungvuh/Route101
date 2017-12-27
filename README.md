@@ -14,7 +14,7 @@ This project is still very far from being a final/ finished product. There are t
 
 ## Features
 
-#### Pseudo-3D
+### Pseudo-3D
 
 In order to create a realistic 3D feeling, I used the translating - projecting - scaling technique that was introduce by **Louis Gorenfeld** and **Jakes Gordon** (reference below). The world coordinates will be translated to camera coordinates, which then be projected onto a normalized projection screen, and finally be scaled down to our physical (canvas) screen coordinates. Details explained in the diagram below:
 
@@ -24,7 +24,7 @@ Building a road is a fun part, especially when it comes to build a curve. Since 
 
 ![](https://github.com/trungvuh/Route66/raw/master/images/curves.png)
 
-#### Collision
+### Collision
 
 For collision with the sprite, at first it was hard because the player can not go back in frame, thus gets stuck in front of the sprite. So I have to "cheat" a little:
 
@@ -42,7 +42,7 @@ for(n = 0 ; n < playerSegment.sprites.length ; n++) {
 }
 ```
 
-#### AI
+### AI
 
 The most challenging part of the project may be the AI. To make all of them know to "steer" around the others and not going through was the hard part. For that, I have each car:
 
