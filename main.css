@@ -118,6 +118,11 @@ body {
   margin-right: 1em;
 }
 
+#hud #rank {
+  float: right;
+  margin-right: 1em;
+}
+
 #hud #current_lap_time {
   float: left;
   margin-left: 1em;

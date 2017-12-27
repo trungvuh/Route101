@@ -200,4 +200,15 @@ function resetCars() {
     segment.cars.push(car);
     cars.push(car);
   }
+  for (var n = 0 ; n < 50 ; n++) {
+    offset = Math.random() * Util.randomChoice([-0.8, 0.8]);
+    z      = Math.floor(Math.random() * segments.length) * segmentLength;
+    sprite = SPRITES.CAR03;
+    speed  = maxSpeed * 4 /5;
+    car = { offset: offset, z: z, sprite: sprite, speed: speed };
+    segment = findSegment(car.z);
+    segment.cars.push(car);
+    cars.push(car);
+  }
+
 }

@@ -197,7 +197,8 @@ function formatTime(dt) {
 
 var hud = {
   speed:            { value: null, dom: Dom.get('speed_value')            },
+  rank:            { value: null, dom: Dom.get('rank_value')            },
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
   last_lap_time:    { value: null, dom: Dom.get('last_lap_time_value')    },
-  fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    }
+  fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    },
 };
