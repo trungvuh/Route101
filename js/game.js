@@ -2,6 +2,9 @@
 // UPDATE THE GAME WORLD
 //=========================================================================
 
+var collisionSprite = new Audio('./music/Impact1.m4a');
+var collisionCar = new Audio('./music/Impact15.m4a');
+
 function update(dt) {
 
   var n, car, carW, sprite, spriteW;
@@ -38,18 +41,20 @@ function update(dt) {
       speed = Util.accelerate(speed, offRoadDecel, dt);
     }
 
-    //detect collision
+    //detect collision with Sprites
     for(n = 0 ; n < playerSegment.sprites.length ; n++) {
       sprite  = playerSegment.sprites[n];
       spriteW = sprite.source.w * SPRITES.SCALE;
       if (Util.overlap(playerX, playerW, sprite.offset + spriteW/2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
         speed = maxSpeed/5;
         position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
+        collisionSprite.play();
         break;
       }
     }
   }
 
+  //detect collision with Cars
   for(n = 0 ; n < playerSegment.cars.length ; n++) {
     car  = playerSegment.cars[n];
     carW = car.sprite.w * SPRITES.SCALE;
@@ -57,6 +62,7 @@ function update(dt) {
       if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
         speed    = car.speed * (car.speed/speed);
         position = Util.increase(car.z, -playerZ, trackLength);
+        collisionCar.play();
         break;
       }
     }

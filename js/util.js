@@ -119,12 +119,14 @@ const Util = {
     return 1 / (Math.pow(Math.E, (distance * distance * density)));
   },
 
-  increase(start, increment, max) { // with looping
+  increase(start, increment, max) { 
     var result = start + increment;
-    while (result >= max)
+    while (result >= max) {
       result -= max;
-    while (result < 0)
+    }
+    while (result < 0) {
       result += max;
+    }
     return result;
   },
 
