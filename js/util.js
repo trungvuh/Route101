@@ -146,7 +146,7 @@ const Util = {
     var max1 = x1 + (w1 * half);
     var min2 = x2 - (w2 * half);
     var max2 = x2 + (w2 * half);
-    return ! ((max1 < min2) || (min1 > max2));
+    return !((max1 < min2) || (min1 > max2));
   }
 
 };

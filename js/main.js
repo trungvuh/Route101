@@ -17,7 +17,7 @@ var background    = null;                    // our background image (loaded bel
 var sprites       = null;                    // our spritesheet (loaded below)
 var resolution    = null;                    // scaling factor to provide resolution independence (computed)
 var roadWidth     = 2000;                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
-var segmentLength = 300;                     // length of a single segment
+var segmentLength = 250;                     // length of a single segment
 var rumbleLength  = 3;                       // number of segments per red/white rumble strip
 var trackLength   = null;                    // z length of entire track (computed)
 var lanes         = 3;                       // number of lanes
@@ -120,7 +120,7 @@ Dom.on('cameraHeight', 'change', (ev) => {
 Dom.on('drawDistance', 'change', (ev) => {
   Dom.blur(ev);
   reset({
-    drawDistance: Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) 
+    drawDistance: Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max')))
   });
 });
 

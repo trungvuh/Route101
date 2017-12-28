@@ -126,11 +126,12 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
   var carW = car.sprite.w * SPRITES.SCALE;
 
   // dont bother steering around other cars when they are 'out of sight' of the player
-  if ((carSegment.index - playerSegment.index) > drawDistance)
+  if ((carSegment.index - playerSegment.index) > drawDistance) {
     return 0;
+  }
 
   for(i = 1 ; i < lookahead ; i++) {
-    segment = segments[(carSegment.index+i)%segments.length];
+    segment = segments[(carSegment.index+i) % segments.length];
 
     if ((segment === playerSegment) && (car.speed > speed) && (Util.overlap(playerX, playerW, car.offset, carW, 1.2))) {
       if (playerX > 0.5) {
