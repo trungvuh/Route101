@@ -175,7 +175,7 @@ function resetSprites() {
 
   //build random billboards and plants
   var side, sprite, offset;
-  for(n = 1000 ; n < (segments.length-50) ; n += 50) {
+  for(n = 1000 ; n < (segments.length-50) ; n += 100) {
     side      = Util.randomChoice([1, -1]);
     addSprite(n + Util.randomInt(0, 50), Util.randomChoice(SPRITES.BILLBOARDS), -side);
     for(i = 0 ; i < 20 ; i++) {

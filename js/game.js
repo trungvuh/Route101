@@ -142,7 +142,9 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
       }
       else {
         dir = (car.offset > playerX) ? 1 : -1;
-        return dir * 1/i * (car.speed-speed)/maxSpeed; // the closer the cars (smaller i) and the greated the speed ratio, the larger the offset
+        return dir * 1/i * (car.speed-speed)/maxSpeed;
+
+        // the closer the cars (smaller i) and the greater the speed ratio, the larger the offset
       }
     }
 
