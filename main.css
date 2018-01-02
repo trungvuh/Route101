@@ -1,6 +1,8 @@
 body {
   font-family: Helvetica;
   z-index: 1;
+  height: 100%;
+  width: 100%;
 }
 
 #game-name {
@@ -151,4 +153,19 @@ body {
 
 #hud .fastest {
   background-color: rgba(255,215,0,0.5);
+}
+
+/* this is for the icons for page link */
+
+.page-link {
+  display: flex;
+  position: absolute;
+  justify-content: space-between;
+  width: 20%;
+  top: 63%;
+  left: 4%;
+}
+
+.page-link > a, img {
+  width: 4em;
 }
