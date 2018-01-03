@@ -143,11 +143,15 @@ const Render = {
     return projectedRoadWidth/Math.max(32, 8 * lanes);
   }
 
+
+
 };
 
 //====================================================================
 // RENDER THE GAME WORLD
 //====================================================================
+
+
 
 function render() {
 
