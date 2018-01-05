@@ -43,17 +43,6 @@ body {
   box-shadow: 2px 2px 5px black;
 }
 
-#instructions {
-  float: left;
-  width: 20%;
-  padding: 1em;
-  z-index: 1;
-  border: 1px solid black;
-  box-shadow: 2px 2px 5px black;
-  margin: 2%;
-  align-items: center;
-}
-
 #fps {
   display: none;
 }
@@ -157,13 +146,29 @@ body {
 
 /* this is for the icons for page link */
 
+#instructions {
+  float: left;
+  width: 20%;
+  padding: 1em;
+  z-index: 1;
+  border: 1px solid black;
+  box-shadow: 2px 2px 5px black;
+  margin: 2%;
+  margin-bottom: 1%;
+  align-items: center;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
 .page-link {
   display: flex;
-  position: absolute;
+  position: relative;
   justify-content: space-between;
   width: 20%;
-  top: 63%;
-  left: 4%;
+  left: 3%;
 }
 
 .page-link > a, img {
