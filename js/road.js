@@ -140,19 +140,19 @@ function resetSprites() {
   var n, i;
 
   //build initial billboards
-  addSprite(20,  SPRITES.BILLBOARD01, -1);
+  addSprite(20,  SPRITES.BILLBOARD05, -1);
   addSprite(40,  SPRITES.BILLBOARD06, -1);
-  addSprite(60,  SPRITES.BILLBOARD07, -1);
+  addSprite(60,  SPRITES.BILLBOARD01, -1);
   addSprite(80,  SPRITES.BILLBOARD09, -1);
   addSprite(100, SPRITES.BILLBOARD08, -1);
   addSprite(120, SPRITES.BILLBOARD02, -1);
   addSprite(140, SPRITES.BILLBOARD03, -1);
-  addSprite(160, SPRITES.BILLBOARD04, -1);
-  addSprite(180, SPRITES.BILLBOARD05, -1);
+  addSprite(160, SPRITES.BILLBOARD07, -1);
+  addSprite(180, SPRITES.BILLBOARD04, -1);
 
-  addSprite(240,                  SPRITES.BILLBOARD07, -1.2);
+  addSprite(240,                  SPRITES.BILLBOARD05, -1.2);
   addSprite(240,                  SPRITES.BILLBOARD06,  1.2);
-  addSprite(segments.length - 25, SPRITES.BILLBOARD07, -1.2);
+  addSprite(segments.length - 25, SPRITES.BILLBOARD05, -1.2);
   addSprite(segments.length - 25, SPRITES.BILLBOARD06,  1.2);
 
   //build initial palm trees
