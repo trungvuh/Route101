@@ -157,3 +157,5 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
   + **Jakes Gordon** for his very details step-by-step tutorial on how to build a racing game. His tutorial was what helped me the most in understanding about how all the little components of the game interact with each other. Details can be found [here](https://codeincomplete.com/posts/javascript-racer-v1-straight/)
 
   + **Pixel Warehouse** and **Sega Senesis** for all the graphic contents in this game. It can be found [here](http://pixel.garoux.net/?scr=sprites&game_id=44&p=1)
+
+  + Some of the billboards are also 'personalized'. Can you spot what they are?
