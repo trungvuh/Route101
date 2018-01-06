@@ -42,6 +42,61 @@ for(n = 0 ; n < playerSegment.sprites.length ; n++) {
 }
 ```
 
+### Speed
+
+For the speed, one thing to note is that the speed of the player is "calculated" by how fast the player's car is passing through each segments, or in other words, how many segments the player is passing in each frame. Hence, when increasing or decreasing the FOV (field of view, which means how much those segments will get "stretched"/ scaled/ rendered out onto the canvas), user will see the effect of the player's car appears to move much faster or slower, respectively.
+
+```JavaScript
+function update(dt) {
+
+  //...
+  var fps           = 60;                      // how many 'update' frames per second
+  var step          = 1/fps;                   // how long is each frame (in seconds)
+  var speed         = 0;                       // current speed
+  var segmentLength = 250;                     // length of a single segment
+  var maxSpeed      = segmentLength/step;      // top speed
+  var accel         =  maxSpeed/5;             // acceleration rate - tuned until it 'felt' right
+  var breaking      = -maxSpeed/2;               // deceleration rate when braking
+  var decel         = -maxSpeed/5;             // 'natural' deceleration rate when neither accelerating, nor braking
+  var offRoadDecel  = -maxSpeed/2;             // off road deceleration is somewhere in between
+  var offRoadLimit  =  maxSpeed/4;             // limit when off road deceleration no longer applies
+
+  var n, car, carW, sprite, spriteW;
+  var playerSegment = findSegment(position+playerZ);
+  var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
+  var speedPercent  = speed/maxSpeed;
+  var dx            = dt * 2 * speedPercent;
+  // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
+  var startPosition = position;
+
+  updateCars(dt, playerSegment, playerW);
+
+  position = Util.increase(position, dt * speed, trackLength);
+
+  if (keyLeft) {
+    playerX = playerX - dx;
+  }
+  else if (keyRight) {
+    playerX = playerX + dx;
+  }
+
+  playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
+
+  if (keyFaster) {
+    speed = Util.accelerate(speed, accel, dt);
+  }
+  else if (keySlower) {
+    speed = Util.accelerate(speed, breaking, dt);
+  }
+  else {
+    speed = Util.accelerate(speed, decel, dt);
+  }
+
+  //...
+}
+```  
+
+
 ### AI
 
 The most challenging part of the project may be the AI. To make all of them know to "steer" around the others and not going through was the hard part. For that, I have each car:

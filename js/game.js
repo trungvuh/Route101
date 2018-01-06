@@ -6,7 +6,7 @@ var collisionSprite = new Audio('./music/Impact1.m4a');
 var collisionCar = new Audio('./music/Impact15.m4a');
 
 function update(dt) {
-
+  
   var n, car, carW, sprite, spriteW;
   var playerSegment = findSegment(position+playerZ);
   var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
@@ -19,19 +19,24 @@ function update(dt) {
 
   position = Util.increase(position, dt * speed, trackLength);
 
-  if (keyLeft)
+  if (keyLeft) {
     playerX = playerX - dx;
-  else if (keyRight)
+  }
+  else if (keyRight) {
     playerX = playerX + dx;
+  }
 
   playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
 
-  if (keyFaster)
+  if (keyFaster) {
     speed = Util.accelerate(speed, accel, dt);
-  else if (keySlower)
+  }
+  else if (keySlower) {
     speed = Util.accelerate(speed, breaking, dt);
-  else
+  }
+  else {
     speed = Util.accelerate(speed, decel, dt);
+  }
 
 
   if ((playerX < -1) || (playerX > 1)) {
