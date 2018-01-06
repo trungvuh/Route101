@@ -6,7 +6,7 @@ var collisionSprite = new Audio('./music/Impact1.m4a');
 var collisionCar = new Audio('./music/Impact15.m4a');
 
 function update(dt) {
-  
+
   var n, car, carW, sprite, spriteW;
   var playerSegment = findSegment(position+playerZ);
   var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
@@ -17,6 +17,7 @@ function update(dt) {
 
   updateCars(dt, playerSegment, playerW);
 
+  // update the position of cameraZ base on speed of the player, ensure within trackLength
   position = Util.increase(position, dt * speed, trackLength);
 
   if (keyLeft) {
@@ -26,6 +27,7 @@ function update(dt) {
     playerX = playerX + dx;
   }
 
+  //this is to take care of steering through the curve.
   playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
 
   if (keyFaster) {
@@ -34,7 +36,7 @@ function update(dt) {
   else if (keySlower) {
     speed = Util.accelerate(speed, breaking, dt);
   }
-  else {
+  else { //natural deceleration
     speed = Util.accelerate(speed, decel, dt);
   }
 
@@ -127,7 +129,7 @@ function updateCars(dt, playerSegment, playerW) {
 
 function updateCarOffset(car, carSegment, playerSegment, playerW) {
 
-  var i, j, dir, segment, otherCar, otherCarW, lookahead = 20;
+  var i, j, dir, segment, otherCar, otherCarW, lookahead = 20, oppo;
   var carW = car.sprite.w * SPRITES.SCALE;
 
   // dont bother steering around other cars when they are 'out of sight' of the player
@@ -155,6 +157,9 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
 
     for(j = 0 ; j < segment.cars.length ; j++) {
       otherCar  = segment.cars[j];
+      if (segment.cars[j].sprite.y == 760) {
+        oppo = segment.cars[j];
+      }
       otherCarW = otherCar.sprite.w * SPRITES.SCALE;
 
       if ((car.speed > otherCar.speed) && Util.overlap(car.offset, carW, otherCar.offset, otherCarW, 1.2)) {
