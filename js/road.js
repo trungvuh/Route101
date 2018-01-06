@@ -205,7 +205,7 @@ function resetCars() {
     offset = Math.random() * Util.randomChoice([-0.8, 0.8]);
     z      = Math.floor(Math.random() * segments.length) * segmentLength;
     pinkCar = SPRITES.CARS1[0];
-    oppoSpeed  = maxSpeed * 4 /5;
+    oppoSpeed  = maxSpeed * 9 /20;
     oppo = { offset: offset, z: z, sprite: pinkCar, speed: oppoSpeed };
     segment = findSegment(oppo.z);
     segment.cars.push(oppo);

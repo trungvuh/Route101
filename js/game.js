@@ -111,12 +111,29 @@ function update(dt) {
 //-------------------------------------------------------------------------
 
 function updateCars(dt, playerSegment, playerW) {
-  var n, car, oldSegment, newSegment;
+  var n, car, oldSegment, newSegment, oppo;
   for(n = 0 ; n < cars.length ; n++) {
     car         = cars[n];
+    if (car.sprite.y === 760) {
+      oppo = car;
+    }
+    // console.log(oppo);
     oldSegment  = findSegment(car.z);
     car.offset  = car.offset + updateCarOffset(car, oldSegment, playerSegment, playerW);
     car.z       = Util.increase(car.z, dt * car.speed, trackLength);
+    if (oppo) {
+      oppo.offset  = oppo.offset + updateCarOffset(oppo, oldSegment, playerSegment, playerW);
+      oppo.z       = Util.increase(oppo.z, dt * oppo.speed, trackLength);
+
+      if (oppo.z > playerZ && 0 <= rank && rank < 20) {
+        rank += 1;
+      }
+      if (oppo.z < playerZ && 0 < rank && rank <= 20) {
+        rank -= 1;
+        // console.log(rank);
+      }
+    }
+    // console.log(count);
     car.percent = Util.percentRemaining(car.z, segmentLength); // useful for interpolation during rendering phase
     newSegment  = findSegment(car.z);
     if (oldSegment !== newSegment) {

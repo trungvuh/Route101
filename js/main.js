@@ -21,7 +21,7 @@ var segmentLength = 250;                     // length of a single segment
 var rumbleLength  = 3;                       // number of segments per red/white rumble strip
 var trackLength   = null;                    // z length of entire track (computed)
 var lanes         = 3;                       // number of lanes
-var fieldOfView   = 100;                     // angle (degrees) for field of view
+var fieldOfView   = 110;                     // angle (degrees) for field of view
 var cameraHeight  = 1250;                    // z height of camera
 var cameraDepth   = null;                    // z distance camera is from screen (computed)
 var drawDistance  = 300;                     // number of segments to draw
@@ -39,6 +39,7 @@ var offRoadLimit  =  maxSpeed/4;             // limit when off road deceleration
 var totalCars      = 200;                     // total number of cars on the road
 var currentLapTime = 0;                       // current lap time
 var lastLapTime    = null;                    // last lap time
+var rank         = 20;                        // ranking
 
 var keyLeft       = false;
 var keyRight      = false;
