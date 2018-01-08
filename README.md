@@ -10,7 +10,7 @@ This project is still very far from being a final/ finished product. There are t
 
 **Note:** although it may appear to be a 3D project, there is no 3D (such as Three.js or WebGL) technology used in this project. This is a pseudo-3D project, built solely on HTML5 using JavaScript and CSS to achieve a more realistic feeling of those old time arcade games.
 
-![](https://github.com/trungvuh/Route66/raw/master/images/intro.gif)
+![](https://res.cloudinary.com/trungvuh/image/upload/v1515395550/Route101_uesath.gif)
 
 ## Features
 
