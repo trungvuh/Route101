@@ -142,10 +142,13 @@ function updateCarOffset(car, carSegment, playerSegment, playerW) {
 }
 ```
 
+## Working on:
+
+Actually racing against other cars. The challenging problem will be to detect when the opponent is changing place from ahead to behind, and vice versa.
+
 ## Future Improvement:
 
-  + Better AI
-  + Actually racing against other cars
+  + Better AI - sometimes the cars didn't detect the other cars ahead fast enough to steer around, thus resulting in a go-through animation.
   + Ranking, last lap, etc.
   + Options for multiple tracks, cars, music
   + Shooting, special ability items?
