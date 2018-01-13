@@ -1,6 +1,6 @@
 # Route 66
 
-## [Live Demo](https://trungvuh.github.io/Route66/)
+## [Live Demo](https://trungvuh.github.io/Route101/)
 
 ### Overview
 
