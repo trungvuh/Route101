@@ -1,10 +1,10 @@
-# Route 66
+# Route 101
 
 ## [Live Demo](https://trungvuh.github.io/Route101/)
 
 ### Overview
 
-I always have a strong passion for racing game. My very first attempt to build a racing game was a simple canvas game, Car Racing, which could be found [here](https://github.com/trungvuh/Racing), or [click here](https://trungvuh.github.io/Racing/) to play. After that, I always wanted to build something else much more interesting. So here it is, my latest project, Route 66.
+I always have a strong passion for racing game. My very first attempt to build a racing game was a simple canvas game, Car Racing, which could be found [here](https://github.com/trungvuh/Racing), or [click here](https://trungvuh.github.io/Racing/) to play. After that, I always wanted to build something else much more interesting. So here it is, my latest project, Route 101.
 
 This project is still very far from being a final/ finished product. There are tons of other features that I wish I had time to implement (i.e. better AI, other racers, track options or car options, etc.), but for now, it is pretty much where I want it to be.
 
